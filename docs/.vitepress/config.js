@@ -13,5 +13,5 @@ module.exports = {
             { text: 'demo2', link: '/demo2' },
         ]
     },
-    base: 'https://liangduoqiang.github.io/learn/'
+    base: '/learn/'
 }
