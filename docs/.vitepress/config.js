@@ -5,7 +5,7 @@ module.exports = {
     themeConfig: {
         //   头部导航
         nav: [
-            { text: 'github', link: '/' },
+            { text: 'github', link: 'https://github.com/liangduoqiang' },
         ],
         //   侧边导航
         sidebar: [
