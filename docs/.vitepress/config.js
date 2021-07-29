@@ -1,6 +1,6 @@
 module.exports = {
     title: '吃灰大全',
-    description: '吃灰大全积累中',
+    description: '学不动？不存在的',
     // 主题配置
     themeConfig: {
         //   头部导航
