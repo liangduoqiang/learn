@@ -1,1 +1,0 @@
-import{o as s,c as n,a}from"./app.dda9282e.js";const t='{"title":"demo1","description":"","frontmatter":{},"relativePath":"demo1.md","lastUpdated":1627550178193}',p={},e=a('',11);p.render=function(a,t,p,o,c,l){return s(),n("div",null,[e])};export{t as __pageData,p as default};
