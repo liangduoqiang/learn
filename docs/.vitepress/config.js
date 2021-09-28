@@ -1,16 +1,32 @@
 module.exports = {
-    title: '吃灰大全',
-    description: '学不动？不存在的',
+    title: '学习笔记',
+    description: '学习笔记',
     // 主题配置
     themeConfig: {
+        lastUpdated: '上次更新',
         //   头部导航
         nav: [
-            { text: 'github', link: 'https://github.com/liangduoqiang' },
+            {text: 'github', link: 'https://github.com/liangduoqiang'}
         ],
         //   侧边导航
         sidebar: [
-            { text: 'demo1', link: '/demo1' },
-            { text: 'demo2', link: '/demo2' },
+            {
+                text: 'Vue',
+                children: [
+                    {
+                        text: 'Vue2',
+                        children: [
+                            {text: 'lifecycle', link: './Vue/Vue2/lifecycle'},
+                        ]
+                    },
+                    {
+                        text: 'Vue3',
+                        children: [
+                            {text: 'lifecycle', link: './Vue/Vue3/lifecycle'},
+                        ]
+                    }
+                ]
+            }
         ]
     },
     base: '/learn/'
