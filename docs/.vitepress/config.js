@@ -23,6 +23,7 @@ module.exports = {
                         text: 'Vue3',
                         children: [
                             {text: 'lifecycle', link: './Vue/Vue3/lifecycle'},
+                            {text: 'computed', link: './Vue/Vue3/computed'},
                         ]
                     }
                 ]
