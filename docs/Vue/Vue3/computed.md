@@ -2,7 +2,7 @@
 
 ## 初始化
 
-首先，执行`computed(() => count1.value + count2.number })`，然后执行`new ComputedRefImpl` 得到一个computed wrap
+首先，执行`computed(() => count1.value + count2.number })`，然后执行`new ComputedRefImpl` 得到一个computed实例
 ```js{3,26}
 const count1 = ref(0)
 const count2 = reactive({ number: 0 })
