@@ -1,4 +1,4 @@
-# computed (v3.2)
+# computed
 
 ## 初始化
 
