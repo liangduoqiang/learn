@@ -39,8 +39,18 @@ export function computed<T>(
 }
 ```
 在`new ComputedRefImpl`里面会执行`new ReactiveEffect`得到一个effect实例
-```js{6}
-constructor(
+```js{17}
+class ComputedRefImpl<T> {
+  public dep?: Dep = undefined
+
+  private _value!: T
+  private _dirty = true
+  public readonly effect: ReactiveEffect<T>
+
+  public readonly __v_isRef = true
+  public readonly [ReactiveFlags.IS_READONLY]: boolean
+
+  constructor(
     getter: ComputedGetter<T>,
     private readonly _setter: ComputedSetter<T>,
     isReadonly: boolean
@@ -53,6 +63,31 @@ constructor(
     })
     this[ReactiveFlags.IS_READONLY] = isReadonly
   }
+  ...
+}
+  
+  export class ReactiveEffect<T = any> {
+    active = true
+    deps: Dep[] = []
+  
+    // can be attached after creation
+    computed?: boolean
+    allowRecurse?: boolean
+    onStop?: () => void
+    // dev only
+    onTrack?: (event: DebuggerEvent) => void
+    // dev only
+    onTrigger?: (event: DebuggerEvent) => void
+  
+    constructor(
+      public fn: () => T,
+      public scheduler: EffectScheduler | null = null,
+      scope?: EffectScope | null
+    ) {
+      recordEffectScope(this, scope)
+    }
+    ...
+}
 ```
 到这里`computed`初始化完成
 
@@ -546,7 +581,7 @@ constructor(
 ```
 执行完renderEffect的scheduler之后，会把render的副作用函数添加进异步队列，等待更新
 
-当异步队列执行render的副作用函数时，会重新调用渲染的render函数，又会重新访问到计算属性count3，又会触发count3的get，这个时候`_dirty`是true，又会重新执行getter函数，把新计算的值返回给render
+当异步队列执行到副作用函数时，会重新调用渲染的render函数，又会重新访问到计算属性count3，又会触发count3的get，这个时候`_dirty`是true，又会重新执行getter函数，把新计算的值返回给render
 
 如果更新不是由computed里面的响应式属性变化而触发的，那么第二次渲染触发computed的get的时候，`_dirty`是false，就不会重新执行计算函数，直接返回上一次计算的结果
 
