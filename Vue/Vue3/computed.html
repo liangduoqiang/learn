@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/learn/assets/style.abb680c9.css">
     <link rel="modulepreload" href="/learn/assets/Home.97f67528.js">
     <link rel="modulepreload" href="/learn/assets/app.2840732f.js">
-    <link rel="modulepreload" href="/learn/assets/Vue_Vue3_computed.md.6fa181c3.lean.js">
+    <link rel="modulepreload" href="/learn/assets/Vue_Vue3_computed.md.1ffca2c3.lean.js">
     <link rel="modulepreload" href="/learn/assets/app.2840732f.js">
     <meta name="twitter:title" content="computed (v3.2) | 学习笔记">
     <meta property="og:title" content="computed (v3.2) | 学习笔记">
@@ -47,7 +47,17 @@
 
   <span class="token keyword">return</span> cRef <span class="token keyword">as</span> any
 <span class="token punctuation">}</span>
-</code></pre></div><p>在<code>new ComputedRefImpl</code>里面会执行<code>new ReactiveEffect</code>得到一个effect实例</p><div class="language-js"><div class="highlight-lines"><br><br><br><br><br><div class="highlighted"> </div><br><br><br><br><br><br><br><br></div><pre><code><span class="token function">constructor</span><span class="token punctuation">(</span>
+</code></pre></div><p>在<code>new ComputedRefImpl</code>里面会执行<code>new ReactiveEffect</code>得到一个effect实例</p><div class="language-js"><div class="highlight-lines"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><div class="highlighted"> </div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><pre><code><span class="token keyword">class</span> <span class="token class-name">ComputedRefImpl</span><span class="token operator">&lt;</span><span class="token constant">T</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> dep<span class="token operator">?</span><span class="token operator">:</span> Dep <span class="token operator">=</span> <span class="token keyword">undefined</span>
+
+  <span class="token keyword">private</span> _value<span class="token operator">!</span><span class="token operator">:</span> <span class="token constant">T</span>
+  <span class="token keyword">private</span> _dirty <span class="token operator">=</span> <span class="token boolean">true</span>
+  <span class="token keyword">public</span> readonly effect<span class="token operator">:</span> ReactiveEffect<span class="token operator">&lt;</span><span class="token constant">T</span><span class="token operator">&gt;</span>
+
+  <span class="token keyword">public</span> readonly __v_isRef <span class="token operator">=</span> <span class="token boolean">true</span>
+  <span class="token keyword">public</span> readonly <span class="token punctuation">[</span>ReactiveFlags<span class="token punctuation">.</span><span class="token constant">IS_READONLY</span><span class="token punctuation">]</span><span class="token operator">:</span> boolean
+
+  <span class="token function">constructor</span><span class="token punctuation">(</span>
     <span class="token parameter">getter<span class="token operator">:</span> ComputedGetter<span class="token operator">&lt;</span><span class="token constant">T</span><span class="token operator">&gt;</span><span class="token punctuation">,</span>
     <span class="token keyword">private</span> readonly _setter<span class="token operator">:</span> ComputedSetter<span class="token operator">&lt;</span><span class="token constant">T</span><span class="token operator">&gt;</span><span class="token punctuation">,</span>
     isReadonly<span class="token operator">:</span> boolean</span>
@@ -60,6 +70,31 @@
     <span class="token punctuation">}</span><span class="token punctuation">)</span>
     <span class="token keyword">this</span><span class="token punctuation">[</span>ReactiveFlags<span class="token punctuation">.</span><span class="token constant">IS_READONLY</span><span class="token punctuation">]</span> <span class="token operator">=</span> isReadonly
   <span class="token punctuation">}</span>
+  <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+  
+  <span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">ReactiveEffect</span><span class="token operator">&lt;</span><span class="token constant">T</span> <span class="token operator">=</span> any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    active <span class="token operator">=</span> <span class="token boolean">true</span>
+    deps<span class="token operator">:</span> Dep<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  
+    <span class="token comment">// can be attached after creation</span>
+    computed<span class="token operator">?</span><span class="token operator">:</span> boolean
+    allowRecurse<span class="token operator">?</span><span class="token operator">:</span> boolean
+    onStop<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token keyword">void</span>
+    <span class="token comment">// dev only</span>
+    onTrack<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">event<span class="token operator">:</span> DebuggerEvent</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token keyword">void</span>
+    <span class="token comment">// dev only</span>
+    onTrigger<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">event<span class="token operator">:</span> DebuggerEvent</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token keyword">void</span>
+  
+    <span class="token function">constructor</span><span class="token punctuation">(</span>
+      <span class="token keyword">public</span> <span class="token function-variable function">fn</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token constant">T</span><span class="token punctuation">,</span>
+      <span class="token keyword">public</span> scheduler<span class="token operator">:</span> EffectScheduler <span class="token operator">|</span> <span class="token keyword">null</span> <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+      scope<span class="token operator">?</span><span class="token operator">:</span> EffectScope <span class="token operator">|</span> <span class="token keyword">null</span>
+    <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">recordEffectScope</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> scope<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
 </code></pre></div><p>到这里<code>computed</code>初始化完成</p><h2 id="依赖收集"><a class="header-anchor" href="#依赖收集" aria-hidden="true">#</a> 依赖收集</h2><p>然后当render函数里面访问到<code>count3</code>计算属性的时候，会触发计算属性的get，然后会执行<code>trackRefValue(self)</code></p><div class="language-js"><div class="highlight-lines"><br><br><br><div class="highlighted"> </div><br><br><br><br><br><br><br></div><pre><code><span class="token keyword">get</span> <span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment">// the computed ref may get wrapped by other proxies e.g. readonly() #3376</span>
     <span class="token keyword">const</span> self <span class="token operator">=</span> <span class="token function">toRaw</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span>
@@ -521,8 +556,8 @@
     <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">queueJob</span><span class="token punctuation">(</span>instance<span class="token punctuation">.</span>update<span class="token punctuation">)</span><span class="token punctuation">,</span>
     instance<span class="token punctuation">.</span>scope <span class="token comment">// track it in component&#39;s effect scope</span>
   <span class="token punctuation">)</span>
-</code></pre></div><p>执行完renderEffect的scheduler之后，会把render的副作用函数添加进异步队列，等待更新</p><p>当异步队列执行render的副作用函数时，会重新调用渲染的render函数，又会重新访问到计算属性count3，又会触发count3的get，这个时候<code>_dirty</code>是true，又会重新执行getter函数，把新计算的值返回给render</p><p>如果更新不是由computed里面的响应式属性变化而触发的，那么第二次渲染触发computed的get的时候，<code>_dirty</code>是false，就不会重新执行计算函数，直接返回上一次计算的结果</p><p>到这里（初始化 依赖收集 派发更新 重新渲染）整个流程就结束了</p></div></div><footer class="page-footer" data-v-7eddb2c4 data-v-fb8d84c6><div class="edit" data-v-fb8d84c6><div class="edit-link" data-v-fb8d84c6 data-v-1ed99556><!----></div></div><div class="updated" data-v-fb8d84c6><p class="last-updated" data-v-fb8d84c6 data-v-5797b537><span class="prefix" data-v-5797b537>上次更新:</span><span class="datetime" data-v-5797b537></span></p></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--></div>
-    <script>__VP_HASH_MAP__ = JSON.parse("{\"index.md\":\"2e1757d5\",\"vue_vue2_lifecycle.md\":\"7fa57b61\",\"vue_vue3_computed.md\":\"6fa181c3\",\"vue_vue3_lifecycle.md\":\"8496fbc8\"}")</script>
+</code></pre></div><p>执行完renderEffect的scheduler之后，会把render的副作用函数添加进异步队列，等待更新</p><p>当异步队列执行到副作用函数时，会重新调用渲染的render函数，又会重新访问到计算属性count3，又会触发count3的get，这个时候<code>_dirty</code>是true，又会重新执行getter函数，把新计算的值返回给render</p><p>如果更新不是由computed里面的响应式属性变化而触发的，那么第二次渲染触发computed的get的时候，<code>_dirty</code>是false，就不会重新执行计算函数，直接返回上一次计算的结果</p><p>到这里（初始化 依赖收集 派发更新 重新渲染）整个流程就结束了</p></div></div><footer class="page-footer" data-v-7eddb2c4 data-v-fb8d84c6><div class="edit" data-v-fb8d84c6><div class="edit-link" data-v-fb8d84c6 data-v-1ed99556><!----></div></div><div class="updated" data-v-fb8d84c6><p class="last-updated" data-v-fb8d84c6 data-v-5797b537><span class="prefix" data-v-5797b537>上次更新:</span><span class="datetime" data-v-5797b537></span></p></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"index.md\":\"7d2c3c62\",\"vue_vue2_lifecycle.md\":\"4d23ddf0\",\"vue_vue3_computed.md\":\"1ffca2c3\",\"vue_vue3_lifecycle.md\":\"c003d9e0\"}")</script>
     <script type="module" async src="/learn/assets/app.2840732f.js"></script>
   </body>
 </html>
